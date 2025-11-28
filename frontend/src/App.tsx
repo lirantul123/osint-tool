@@ -1,35 +1,40 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import IPLookup from "./components/IPLookup";
+import DomainLookup from "./components/DomainLookup";
+import SocialSearch from "./components/SocialSearch";
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <div style={styles.container}>
+      <h1 style={styles.title}>🔍 OSINT Toolkit</h1>
+
+      <div style={styles.grid}>
+        <IPLookup />
+        <DomainLookup />
+        <SocialSearch />
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    </div>
+  );
 }
 
-export default App
+export default App;
+
+const styles = {
+  container: {
+    padding: "30px",
+    fontFamily: "Arial, sans-serif",
+    background: "#f4f7fb",
+    minHeight: "100vh",
+  },
+  title: {
+    textAlign: "center" as const,
+    marginBottom: "30px",
+    fontSize: "36px",
+    color: "#222",
+    fontWeight: 700,
+  },
+  grid: {
+    display: "grid",
+    gap: "20px",
+    gridTemplateColumns: "repeat(auto-fit, minmax(350px, 1fr))",
+  },
+};
