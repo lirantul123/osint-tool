@@ -1,40 +1,26 @@
-import IPLookup from "./components/IPLookup";
-import DomainLookup from "./components/DomainLookup";
-import SocialSearch from "./components/SocialSearch";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import Layout from "./components/Layout";
+import Dashboard from "./pages/Dashboard";
+import InvestigatePage from "./pages/InvestigatePage";
+import StatisticsPage from "./pages/StatisticsPage";
 
-function App() {
+export default function App() {
   return (
-    <div style={styles.container}>
-      <h1 style={styles.title}>🔍 OSINT Toolkit</h1>
-
-      <div style={styles.grid}>
-        <IPLookup />
-        <DomainLookup />
-        <SocialSearch />
-      </div>
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route element={<Layout />}>
+          <Route index element={<Dashboard />} />
+          <Route path="investigate" element={<InvestigatePage />} />
+          <Route path="statistics" element={<StatisticsPage />} />
+          <Route path="people" element={<Navigate to="/investigate?mode=person" replace />} />
+          <Route path="ip" element={<Navigate to="/investigate" replace />} />
+          <Route path="domain" element={<Navigate to="/investigate" replace />} />
+          <Route path="dns" element={<Navigate to="/investigate" replace />} />
+          <Route path="subdomain" element={<Navigate to="/investigate" replace />} />
+          <Route path="email" element={<Navigate to="/investigate" replace />} />
+          <Route path="username" element={<Navigate to="/investigate" replace />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
   );
 }
-
-export default App;
-
-const styles = {
-  container: {
-    padding: "30px",
-    fontFamily: "Arial, sans-serif",
-    background: "#f4f7fb",
-    minHeight: "100vh",
-  },
-  title: {
-    textAlign: "center" as const,
-    marginBottom: "30px",
-    fontSize: "36px",
-    color: "#222",
-    fontWeight: 700,
-  },
-  grid: {
-    display: "grid",
-    gap: "20px",
-    gridTemplateColumns: "repeat(auto-fit, minmax(350px, 1fr))",
-  },
-};

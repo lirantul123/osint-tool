@@ -1,12 +1,12 @@
 import { Router } from "express";
-import { lookupIP } from "../services/ipService";
+import { lookupEmail } from "../services/emailService";
 import { ok } from "../types/api";
 
 const router = Router();
 
 router.post("/", async (req, res) => {
-  const { ip } = req.body;
-  const result = await lookupIP(ip);
+  const { email } = req.body;
+  const result = await lookupEmail(email);
   res.json(ok(result));
 });
 

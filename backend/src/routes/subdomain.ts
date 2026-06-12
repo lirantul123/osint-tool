@@ -1,12 +1,12 @@
 import { Router } from "express";
-import { lookupIP } from "../services/ipService";
+import { enumerateSubdomains } from "../services/subdomainService";
 import { ok } from "../types/api";
 
 const router = Router();
 
 router.post("/", async (req, res) => {
-  const { ip } = req.body;
-  const result = await lookupIP(ip);
+  const { domain } = req.body;
+  const result = await enumerateSubdomains(domain);
   res.json(ok(result));
 });
 
