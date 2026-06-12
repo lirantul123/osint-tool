@@ -82,6 +82,45 @@ docker compose up --build
 - Frontend: http://localhost:5173
 - Backend API: http://localhost:3001
 
+### Deploy on Vercel (separate frontend + backend)
+
+Use **two Vercel projects** from the same repo, each with a different root directory.
+
+| Project | Root directory | Production URL |
+|---------|----------------|----------------|
+| **Backend** | `backend` | https://osint-tool-81wx.vercel.app |
+| **Frontend** | `frontend` | https://osint-tool-ten.vercel.app |
+
+#### Backend project settings
+
+- **Root Directory:** `backend`
+- **Build Command:** `npm run build`
+- **Output:** serverless (see `backend/vercel.json`)
+
+**Environment variables:**
+
+| Variable | Value |
+|----------|-------|
+| `FRONTEND_URL` | `https://osint-tool-ten.vercel.app` |
+
+Test: open https://osint-tool-81wx.vercel.app/api/health — should return JSON `{ "status": "ok", ... }`.
+
+#### Frontend project settings
+
+- **Root Directory:** `frontend`
+- **Build Command:** `npm run build`
+- **Output Directory:** `dist`
+
+**Environment variables:**
+
+| Variable | Value |
+|----------|-------|
+| `VITE_API_URL` | `https://osint-tool-81wx.vercel.app/api` |
+
+Redeploy the frontend after setting `VITE_API_URL` (Vite bakes env vars in at build time).
+
+> **Vercel limits:** Serverless functions time out after **10s** (Hobby) or **60s** (Pro). Long investigations (domain scans, username deep scan) may fail on Hobby — use Pro or deploy the backend on Railway/Render/Fly.io for longer timeouts.
+
 ### Share with others
 
 | Approach | Best for |
@@ -166,7 +205,8 @@ osint-tool/
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `PORT` | `3001` | Backend server port (5000 conflicts with macOS AirPlay) |
-| `VITE_API_URL` | `/api` | Frontend API base URL (set for production) |
+| `FRONTEND_URL` | — | Frontend origin for CORS (e.g. `https://osint-tool-ten.vercel.app`) |
+| `VITE_API_URL` | `/api` | Frontend API base URL — set to `https://your-backend.vercel.app/api` in production |
 
 Copy `backend/.env.example` to `backend/.env` to customize.
 
