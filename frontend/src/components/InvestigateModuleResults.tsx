@@ -23,6 +23,7 @@ interface UsernamePrefixResult {
   page?: number;
   pageSize?: number;
   totalPages?: number;
+  deepScan?: boolean;
   error?: string;
 }
 
@@ -49,12 +50,16 @@ export function InvestigateModuleResults({
   module,
   data,
   onUsernamePageChange,
+  onUsernameDeepScan,
   usernamePageLoading,
+  usernameDeepScanLoading,
 }: {
   module: string;
   data: Record<string, unknown>;
   onUsernamePageChange?: (page: number) => void;
+  onUsernameDeepScan?: () => void;
   usernamePageLoading?: boolean;
+  usernameDeepScanLoading?: boolean;
 }) {
   if (data.error) {
     return <p className="error-text">{String(data.error)}</p>;
@@ -99,6 +104,7 @@ export function InvestigateModuleResults({
       result.totalPages == null &&
       result.page == null &&
       githubTotal > pageSize;
+    const isDeepScan = result.deepScan === true;
 
     return (
       <>
@@ -108,16 +114,29 @@ export function InvestigateModuleResults({
             loads new results.
           </p>
         )}
-        <p className="prefix-hint">
-          Page {page} of {totalPages}
-          {githubTotal > 0 && (
-            <>
-              {" "}
-              · {githubTotal} matching GitHub accounts · {result.totalUsernames}{" "}
-              with profiles on this page
-            </>
+        <div className="username-toolbar">
+          <p className="prefix-hint">
+            Page {page} of {totalPages}
+            {githubTotal > 0 && <> · {githubTotal} GitHub matches</>}
+            {isDeepScan
+              ? ` · ${result.totalUsernames} with cross-platform hits`
+              : " · GitHub preview (fast)"}
+          </p>
+          {onUsernameDeepScan && !isDeepScan && (
+            <button
+              type="button"
+              className="search-btn scan-btn"
+              disabled={usernameDeepScanLoading || usernamePageLoading}
+              onClick={onUsernameDeepScan}
+            >
+              {usernameDeepScanLoading ? (
+                <span className="spinner" />
+              ) : (
+                "Scan platforms on this page"
+              )}
+            </button>
           )}
-        </p>
+        </div>
         <Pagination
           page={page}
           totalPages={totalPages}
@@ -185,11 +204,15 @@ export function InvestigateModuleResults({
 export function TechnicalResults({
   modules,
   onUsernamePageChange,
+  onUsernameDeepScan,
   usernamePageLoading,
+  usernameDeepScanLoading,
 }: {
   modules: Record<string, unknown>;
   onUsernamePageChange?: (page: number) => void;
+  onUsernameDeepScan?: () => void;
   usernamePageLoading?: boolean;
+  usernameDeepScanLoading?: boolean;
 }) {
   return (
     <>
@@ -199,7 +222,9 @@ export function TechnicalResults({
             module={module}
             data={data as Record<string, unknown>}
             onUsernamePageChange={module === "username" ? onUsernamePageChange : undefined}
+            onUsernameDeepScan={module === "username" ? onUsernameDeepScan : undefined}
             usernamePageLoading={usernamePageLoading}
+            usernameDeepScanLoading={usernameDeepScanLoading}
           />
         </ResultCard>
       ))}

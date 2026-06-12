@@ -36,7 +36,7 @@ All former standalone tools (IP Lookup, Domain, DNS, Subdomains, Email, Username
 | **DNS Records** | Full sweep: A, AAAA, MX, TXT, NS, CNAME, SOA |
 | **Subdomain Enum** | Certificate Transparency logs via crt.sh |
 | **Email Intelligence** | MX validation, Gravatar, reputation & breach indicators |
-| **Username Search** | Prefix search on GitHub, then cross-checks Reddit, Dev.to, HN, Keybase, GitLab, Medium, Pinterest — **50 results per page**, paginated (up to 1,000 GitHub logins) |
+| **Username Search** | Prefix search on GitHub — **50 per page**, paginated (up to 1,000 logins). **Fast preview** loads GitHub-only results instantly; optional **Scan platforms on this page** deep-checks Reddit, Dev.to, HN, Keybase, GitLab |
 | **People Intelligence** | Name search — Wikipedia/Wikidata enrichment, username variant probing, profile discovery, and one-click search links (LinkedIn, Facebook, Instagram, X, Reddit, GitHub, Medium, Dev.to, Hacker News, Twitch, Flickr, Stack Overflow). Supports English and Hebrew names. |
 | **Statistics** | Bar chart by target type, search-mode donut, 7-day activity timeline, recent searches table |
 
@@ -61,7 +61,7 @@ npm run dev
 
 Open **http://localhost:5173** in your browser.
 
-> **Note:** After pulling updates, restart `npm run dev` so the backend picks up new API behavior (e.g. username pagination).
+> **Note:** After pulling updates, restart `npm run dev` so the backend picks up new API behavior (e.g. username pagination, fast/deep scan).
 
 ### Run Separately
 
@@ -112,7 +112,7 @@ All endpoints accept `POST` with JSON body and return a unified response envelop
 | `POST /api/subdomain` | `{ "domain": "example.com" }` | Subdomain discovery via CT logs |
 | `POST /api/email` | `{ "email": "user@example.com" }` | Email validation & reputation |
 | `POST /api/username` | `{ "username": "johndoe" }` | Multi-platform username search |
-| `POST /api/investigate` | `{ "target": "...", "page?": 1 }` | Auto-detect & run modules; `page` applies to username prefix results |
+| `POST /api/investigate` | `{ "target": "...", "page?": 1, "deepScan?": false }` | Auto-detect & run modules. Username: `page` for pagination; `deepScan: true` cross-checks other platforms on that page |
 | `POST /api/people` | `{ "name": "John Smith" }` | Person investigation & digital footprint |
 
 ### Examples
@@ -123,10 +123,15 @@ curl -X POST http://localhost:3001/api/investigate \
   -H "Content-Type: application/json" \
   -d '{"target": "example.com"}'
 
-# Username prefix — page 2
+# Username prefix — fast page 2 (GitHub only)
 curl -X POST http://localhost:3001/api/investigate \
   -H "Content-Type: application/json" \
   -d '{"target": "liran", "page": 2}'
+
+# Username prefix — deep scan current page (cross-platform)
+curl -X POST http://localhost:3001/api/investigate \
+  -H "Content-Type: application/json" \
+  -d '{"target": "liran", "page": 1, "deepScan": true}'
 
 # Person search
 curl -X POST http://localhost:3001/api/people \

@@ -23,7 +23,7 @@ const TYPE_COLORS: Record<string, string> = {
   domain: "#8b5cf6",
   email: "#f59e0b",
   username: "#10b981",
-  person: "#ec4899",
+  person: "#3b82f6",
 };
 
 export default function StatisticsPage() {
@@ -97,7 +97,7 @@ export default function StatisticsPage() {
               <DonutChart
                 segments={[
                   { label: "Target", value: stats.byMode.target, color: "#06b6d4" },
-                  { label: "Person", value: stats.byMode.person, color: "#8b5cf6" },
+                  { label: "Person", value: stats.byMode.person, color: "#3b82f6" },
                 ]}
               />
             </ResultCard>

@@ -56,16 +56,23 @@ export default function InvestigatePage() {
     setPeopleResult(null);
   }
 
-  async function runSearch(page = 1, isPageChange = false) {
+  async function runSearch(
+    page = 1,
+    opts: { isPageChange?: boolean; deepScan?: boolean } = {}
+  ) {
     if (!query.trim()) return;
-    if (isPageChange) {
+    const { isPageChange = false, deepScan = false } = opts;
+
+    if (deepScan) {
+      setDeepScanLoading(true);
+    } else if (isPageChange) {
       setPageLoading(true);
     } else {
       setLoading(true);
       page = 1;
     }
     setError("");
-    if (!isPageChange) {
+    if (!isPageChange && !deepScan) {
       setTargetResult(null);
       setPeopleResult(null);
     }
@@ -88,9 +95,11 @@ export default function InvestigatePage() {
         const data = await post<InvestigationResult>("/investigate", {
           target: query.trim(),
           page: String(page),
+          ...(deepScan ? { deepScan: "true" } : {}),
         });
         setTargetResult(data);
-        if (!data.error && !isPageChange) {
+        setCurrentPage(page);
+        if (!data.error && !isPageChange && !deepScan) {
           const tStats = technicalStats(data.modules);
           const resultCount = tStats
             .filter((s) => s.label !== "Modules")
@@ -110,11 +119,16 @@ export default function InvestigatePage() {
     } finally {
       setLoading(false);
       setPageLoading(false);
+      setDeepScanLoading(false);
     }
   }
 
   function handleUsernamePageChange(page: number) {
-    runSearch(page, true);
+    runSearch(page, { isPageChange: true });
+  }
+
+  function handleDeepScan() {
+    runSearch(currentPage, { deepScan: true });
   }
 
   function exportJson() {
@@ -227,7 +241,11 @@ export default function InvestigatePage() {
               onUsernamePageChange={
                 targetResult.type === "username" ? handleUsernamePageChange : undefined
               }
+              onUsernameDeepScan={
+                targetResult.type === "username" ? handleDeepScan : undefined
+              }
               usernamePageLoading={pageLoading}
+              usernameDeepScanLoading={deepScanLoading}
             />
           )}
 
